@@ -12,7 +12,7 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_success(self, mock_format_response, mock_process_data,
-                              mock_fetch_data, mock_parse_datetime):
+                               mock_fetch_data, mock_parse_datetime):
         """Тест успешного выполнения home_page."""
         # Подготавливаем тестовые данные
         test_date = "2024-01-15"
@@ -50,9 +50,9 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_api_failure_with_fallback(self, mock_format_response,
-                                                         mock_process_data,
-                                                         mock_fetch_data,
-                                                         mock_parse_datetime):
+                                                 mock_process_data,
+                                                 mock_fetch_data,
+                                                 mock_parse_datetime):
         """Тест с откатом на заглушку при ошибке API (raw_data is None)."""
         test_date = "2024-01-15"
 
@@ -85,7 +85,7 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_parse_error(self, mock_format_response, mock_process_data,
-                          mock_fetch_data, mock_parse_datetime):
+                                   mock_fetch_data, mock_parse_datetime):
         """Тест ошибки парсинга даты."""
         test_date = "invalid-date"
 
@@ -109,8 +109,8 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_processing_error(self, mock_format_response,
-                                     mock_process_data, mock_fetch_data,
-                             mock_parse_datetime):
+                                        mock_process_data, mock_fetch_data,
+                                        mock_parse_datetime):
         """Тест ошибки обработки данных (process_data_with_pandas)."""
         test_date = "2024-01-15"
 
@@ -137,8 +137,8 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_formatting_error(self, mock_format_response,
-                             mock_process_data, mock_fetch_data,
-             mock_parse_datetime):
+                                        mock_process_data, mock_fetch_data,
+                                        mock_parse_datetime):
         """Тест ошибки форматирования ответа (format_response)."""
         test_date = "2024-01-15"
 
