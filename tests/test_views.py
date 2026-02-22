@@ -153,8 +153,7 @@ class TestHomePage(unittest.TestCase):
         # Ошибка в форматировании
         mock_format_response.side_effect = Exception("Formatting failed")
 
-        result = home_page(test_date)  # Исправлено: было 'home', теперь 'home_page(test_date)'
-
+        result = home_page(test_date)
         error_json, status_code = result
         error_response = json.loads(error_json)
 
