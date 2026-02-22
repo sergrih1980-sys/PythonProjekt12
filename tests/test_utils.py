@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch, Mock
 import requests
 from requests.exceptions import RequestException
-
 from src.utils import fetch_external_data
+
 
 class TestUtilsFunctions(unittest.TestCase):
 
