@@ -2,7 +2,7 @@ import json
 import logging
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Dict, Any
+
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -108,7 +108,6 @@ def expenses_by_category(
             "monthly_breakdown": []
         }
         return json.dumps(error_response, ensure_ascii=False, indent=2)
-
 
 
 def _format_response(
