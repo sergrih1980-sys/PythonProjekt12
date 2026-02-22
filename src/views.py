@@ -8,8 +8,6 @@ logger = logging.getLogger(__name__)
 
 def home_page(date_string):
     try:
-        parsed_date = parse_datetime(date_string)
-
         api_url = "https://api.example.com/data"
         api_params = {"date": date_string}
         raw_data = fetch_external_data(api_url, api_params)
