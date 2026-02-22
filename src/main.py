@@ -9,6 +9,7 @@ from typing import List, Dict, Any
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def parse_datetime(date_string: str) -> datetime:
     """Парсит строку даты и времени в объект datetime."""
     try:
@@ -18,6 +19,7 @@ def parse_datetime(date_string: str) -> datetime:
     except ValueError as e:
         logger.error(f"Ошибка парсинга даты {date_string}: {e}")
         raise ValueError("Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
+
 
 def fetch_external_data(api_url: str, params: Dict = None) -> Any:
     """Получает данные из внешнего API."""
@@ -30,6 +32,7 @@ def fetch_external_data(api_url: str, params: Dict = None) -> Any:
     except requests.RequestException as e:
         logger.error(f"Ошибка при запросе к API: {e}")
         return None
+
 
 def process_data_with_pandas(raw_data: List[Dict]) -> List[Dict]:
     """Обрабатывает данные с использованием pandas."""
@@ -48,6 +51,7 @@ def process_data_with_pandas(raw_data: List[Dict]) -> List[Dict]:
     logger.info("Данные успешно обработаны с помощью pandas")
     return result
 
+
 def format_response(data: List[Dict], input_date: str) -> str:
     """Формирует финальный JSON‑ответ для главной страницы."""
     response = {
@@ -59,6 +63,7 @@ def format_response(data: List[Dict], input_date: str) -> str:
     }
     return json.dumps(response, ensure_ascii=False, indent=2)
 
+
 def _format_search_response(results: List[Dict[str, Any]], query: str, count: int) -> str:
     """Вспомогательная функция для формирования JSON‑ответа поиска."""
     response = {
@@ -68,6 +73,7 @@ def _format_search_response(results: List[Dict[str, Any]], query: str, count: in
         "results": results
     }
     return json.dumps(response, ensure_ascii=False, indent=2)
+
 
 def _format_expenses_response(
     monthly_data: list,
@@ -89,6 +95,7 @@ def _format_expenses_response(
         "monthly_breakdown": monthly_data
     }
     return json.dumps(response, ensure_ascii=False, indent=2)
+
 
 def home_page(date_string: str) -> str:
     """Обработка главной страницы."""
@@ -119,6 +126,7 @@ def home_page(date_string: str) -> str:
         }
         logger.error(f"Ошибка в функции home_page: {e}")
         return json.dumps(error_response, ensure_ascii=False, indent=2), 500
+
 
 def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
     """Функция сервиса «Простой поиск»."""
@@ -180,7 +188,7 @@ def expenses_by_category(
             (df['category'] == category) &
             (df['date'] >= start_date) &
             (df['date'] <= ref_date)
-        ].copy()
+            ].copy()
         filtered_df.dropna(subset=['date'], inplace=True)
 
         if filtered_df.empty:
