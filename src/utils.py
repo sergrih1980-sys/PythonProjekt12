@@ -1,4 +1,4 @@
-import json
+
 import logging
 import pandas as pd
 from datetime import datetime
@@ -7,6 +7,7 @@ import requests
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def parse_datetime(date_string):
     """
@@ -19,6 +20,7 @@ def parse_datetime(date_string):
     except ValueError as e:
         logger.error(f"Ошибка парсинга даты {date_string}: {e}")
         raise ValueError(f"Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
+
 
 def fetch_external_data(api_url, params=None):
     """
@@ -33,6 +35,7 @@ def fetch_external_data(api_url, params=None):
     except requests.RequestException as e:
         logger.error(f"Ошибка при запросе к API: {e}")
         return None
+
 
 def process_data_with_pandas(raw_data):
     """
@@ -57,6 +60,7 @@ def process_data_with_pandas(raw_data):
 
     logger.info("Данные успешно обработаны с помощью pandas")
     return result
+
 
 def format_response(data, input_date):
     """
