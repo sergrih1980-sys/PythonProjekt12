@@ -14,27 +14,35 @@ class TestHomePage(unittest.TestCase):
         mock_fetch_data.return_value = [{"id": 1, "value": "test"}]
         mock_processed_data = Mock()
         mock_process_data.return_value = mock_processed_data
-        expected_response = {"status": "success", "data": "processed"}
-        mock_format_response.return_value = expected_response
+        expected_response_dict = {"status": "success", "data": "processed"}
+        mock_format_response.return_value = expected_response_dict
 
         # Выполнение
         result = home_page("2024-01-15")
 
         # Проверки
-        mock_fetch_data.assert_called_once()
+        mock_fetch_data.assert_called_once_with("2024-01-15")
         mock_process_data.assert_called_once_with(mock_fetch_data.return_value)
         mock_format_response.assert_called_once_with(mock_processed_data, "2024-01-15")
-        self.assertEqual(result, expected_response)
+
+        # Преобразуем результат в dict, если это JSON‑строка
+        if isinstance(result, str):
+            result_dict = json.loads(result)
+        else:
+            result_dict = result
+
+        self.assertEqual(result_dict, expected_response_dict)
 
     @patch('src.views.fetch_external_data')
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_api_failure_with_fallback(self, mock_format_response,
-                                                 mock_process_data, mock_fetch_data):
+                                                      mock_process_data, mock_fetch_data):
         test_date = "2024-01-15"
-        mock_fetch_data.return_value = None  # API вернуло None
+        # Имитируем сбой API
+        mock_fetch_data.return_value = None
 
-        # Заглушка данных
+        # Заглушка данных для fallback
         fallback_data = [
             {"id": 1, "value": "test1", "category": "A"},
             {"id": 2, "value": "test2", "category": "B"}
@@ -45,13 +53,21 @@ class TestHomePage(unittest.TestCase):
         expected_response_data = {"status": "success", "data": "fallback"}
         mock_format_response.return_value = expected_response_data
 
+        # Выполнение
         result = home_page(test_date)
 
-        # Проверяем вызовы
+        # Проверяем вызовы моков
         mock_fetch_data.assert_called_once_with(test_date)
         mock_process_data.assert_called_once_with(fallback_data)
         mock_format_response.assert_called_once_with(mock_processed_data, test_date)
-        self.assertEqual(result, expected_response_data)
+
+        # Обрабатываем результат: JSON‑строка или dict
+        if isinstance(result, str):
+            result_dict = json.loads(result)
+        else:
+            result_dict = result
+
+        self.assertEqual(result_dict, expected_response_data)
 
     @patch('src.views.fetch_external_data')
     @patch('src.views.process_data_with_pandas')
