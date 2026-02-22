@@ -1,9 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 from datetime import datetime
-import pandas as pd
 
-# Замените 'your_module' на имя вашего модуля
 from src.utils import (
     parse_datetime,
     fetch_external_data,

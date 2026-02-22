@@ -1,10 +1,8 @@
 import unittest
 import pandas as pd
-from datetime import datetime, timedelta
 import json
-
-
 from src.reports import expenses_by_category, _format_response
+
 
 class TestExpensesByCategory(unittest.TestCase):
 
