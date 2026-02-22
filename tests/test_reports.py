@@ -1,11 +1,9 @@
-import json
 import unittest
+import json
 from datetime import datetime, timedelta
-
 import pandas as pd
 
 from src.reports import expenses_by_category
-
 
 class TestExpensesByCategory(unittest.TestCase):
 
@@ -39,7 +37,7 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertEqual(response["category"], "Продукты")
         self.assertEqual(response["reference_date"], "2024-05-31")
 
-        # Рассчитываем period_start как 90 дней назад от reference_date
+        # Расчёт period_start: 90 дней назад от reference_date
         ref_date = datetime.strptime(self.reference_date, '%Y-%m-%d')
         period_start = (ref_date - timedelta(days=90)).strftime('%Y-%m-%d')
         self.assertEqual(response["period_start"], period_start)
@@ -49,7 +47,7 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertAlmostEqual(response["total_amount"], 3000.00, places=2)
         self.assertEqual(response["transaction_count"], 3)
 
-        # Проверяем ежемесячную разбивку
+        # Проверка ежемесячной разбивки
         monthly_breakdown = response["monthly_breakdown"]
         self.assertEqual(len(monthly_breakdown), 3)  # январь, март, май
 
@@ -86,6 +84,7 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertAlmostEqual(response["total_amount"], 1800.00, places=2)
         self.assertEqual(response["transaction_count"], 2)
 
+        # Проверка ежемесячной разбивки для корректных дат
         monthly_breakdown = response["monthly_breakdown"]
         self.assertEqual(len(monthly_breakdown), 2)  # январь и март
 
