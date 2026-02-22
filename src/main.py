@@ -9,7 +9,6 @@ import requests
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 # === ФУНКЦИИ ОТЧЁТА «ТРАТЫ ПО КАТЕГОРИИ» ===
 
 def expenses_by_category(
@@ -21,13 +20,13 @@ def expenses_by_category(
     Функция отчёта «Траты по категории».
     """
     try:
-        logger.info(f"Запуск отчёта 'Траты по категории' для категории '{category}' с датой отсчёта {reference_date}")
+        logger.info("Запуск отчёта 'Траты по категории' для категории '%s' с датой отсчёта %s", category, reference_date)
 
         # Парсим дату отсчёта
         try:
             ref_date = datetime.strptime(reference_date, '%Y-%m-%d')
         except ValueError as e:
-            error_msg = f"Неверный формат даты отсчёта. Ожидаемый формат: YYYY-MM-DD. Получено: {reference_date}"
+            error_msg = "Неверный формат даты отсчёта. Ожидаемый формат: YYYY-MM-DD. Получено: %s" % reference_date
             logger.error(error_msg)
             raise ValueError(error_msg) from e
 
@@ -38,7 +37,7 @@ def expenses_by_category(
         required_columns = ['date', 'amount', 'category']
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
-            error_msg = f"В DataFrame отсутствуют необходимые колонки: {missing_columns}"
+            error_msg = "В DataFrame отсутствуют необходимые колонки: %s" % missing_columns
             logger.error(error_msg)
             raise KeyError(error_msg)
 
@@ -57,7 +56,8 @@ def expenses_by_category(
 
         # Если нет данных по категории за период
         if filtered_df.empty:
-            logger.warning(f"Нет транзакций по категории '{category}' за период с {start_date.date()} по {ref_date.date()}")
+            logger.warning("Нет транзакций по категории '%s' за период с %s по %s",
+                         category, start_date.date(), ref_date.date())
             return _format_expenses_response([], category, reference_date, 0.0, 0)
 
         # Рассчитываем общую сумму трат
@@ -88,11 +88,11 @@ def expenses_by_category(
             float(total_amount),
             len(filtered_df)
         )
-        logger.info(f"Отчёт успешно сформирован. Общая сумма трат: {total_amount}")
+        logger.info("Отчёт успешно сформирован. Общая сумма трат: %s", total_amount)
         return result
 
     except Exception as e:
-        error_message = f"Ошибка в функции expenses_by_category: {str(e)}"
+        error_message = "Ошибка в функции expenses_by_category: %s" % str(e)
         logger.error(error_message)
         error_response = {
             "status": "error",
@@ -104,7 +104,6 @@ def expenses_by_category(
             "monthly_breakdown": []
         }
         return json.dumps(error_response, ensure_ascii=False, indent=2)
-
 
 def _format_expenses_response(
     monthly_data: list,
@@ -131,7 +130,7 @@ def _format_expenses_response(
 def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
     """Функция сервиса «Простой поиск»."""
     try:
-        logger.info(f"Запуск поиска с запросом: '{search_query}'")
+        logger.info("Запуск поиска с запросом: '%s'", search_query)
 
         # Нормализуем поисковый запрос
         normalized_query = search_query.strip().lower()
@@ -156,11 +155,11 @@ def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
 
         # Формируем JSON‑ответ
         result = _format_search_response(found_transactions, search_query, len(found_transactions))
-        logger.info(f"Поиск завершён. Найдено {len(found_transactions)} транзакций")
+        logger.info("Поиск завершён. Найдено %d транзакций", len(found_transactions))
         return result
 
     except Exception as e:
-        error_message = f"Ошибка в функции simple_search: {str(e)}"
+        error_message = "Ошибка в функции simple_search: %s" % str(e)
         logger.error(error_message)
         error_response = {
             "status": "error",
@@ -187,11 +186,11 @@ def parse_datetime(date_string: str) -> datetime:
     """Парсит строку даты и времени в объект datetime."""
     try:
         parsed_date = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-        logger.info(f"Успешно распарсена дата: {date_string}")
+        logger.info("Успешно распарсена дата: %s", date_string)
         return parsed_date
     except ValueError as e:
-        logger.error(f"Ошибка парсинга даты {date_string}: {e}")
-        raise ValueError(f"Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
+        logger.error("Ошибка парсинга даты %s: %s", date_string, e)
+        raise ValueError("Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
 
 def fetch_external_data(api_url: str, params: Dict = None) -> Dict:
     """Получает данные из внешнего API."""
@@ -202,4 +201,3 @@ def fetch_external_data(api_url: str, params: Dict = None) -> Dict:
         logger.info("Успешно получены данные из API")
         return data
     except requests.RequestException as e:
-        logger.error(f
