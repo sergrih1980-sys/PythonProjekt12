@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def home_page(date_string):
     try:
         parsed_date = parse_datetime(date_string)
