@@ -90,6 +90,5 @@ class TestExpensesByCategory(unittest.TestCase):
         jan_data = next(item for item in monthly_breakdown if item["month"] == "2024-01")
         self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
 
-
         march_data = next(item for item in monthly_breakdown if item["month"] == "2024-03")
         self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
