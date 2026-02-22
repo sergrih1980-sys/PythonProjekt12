@@ -5,7 +5,6 @@ import json
 from src.views import home_page
 
 
-
 class TestHomePage(unittest.TestCase):
 
     @patch('src.views.parse_datetime')
@@ -123,7 +122,6 @@ class TestHomePage(unittest.TestCase):
 
         # Мок обработки данных выбрасывает исключение
         mock_process_data.side_effect = Exception("Processing failed")
-
 
         result = home_page(test_date)
 
