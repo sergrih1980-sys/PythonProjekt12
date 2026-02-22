@@ -5,7 +5,6 @@ import json
 from src.views import home_page
 
 
-
 class TestHomePage(unittest.TestCase):
 
     @patch('src.views.parse_datetime')
@@ -105,51 +104,60 @@ class TestHomePage(unittest.TestCase):
         self.assertEqual(error_response["input_date"], test_date)
         self.assertEqual(status_code, 500)
 
-    # ... остальные тесты с аналогичными исправлениями отступов
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_processing_error(self, mock_format_response,
+                                     mock_process_data, mock_fetch_data,
+                             mock_parse_datetime):
+        """Тест ошибки обработки данных (process_data_with_pandas)."""
+        test_date = "2024-01-15"
+
+        # Все шаги до обработки проходят успешно
+        mock_parsed_date = Mock()
+        mock_parse_datetime.return_value = mock_parsed_date
+        mock_raw_data = [{"id": 1}]
+        mock_fetch_data.return_value = mock_raw_data
+
+        # Мок обработки данных выбрасывает исключение
+        mock_process_data.side_effect = Exception("Processing failed")
+
+        result = home_page(test_date)
+
+        error_json, status_code = result
+        error_response = json.loads(error_json)
+
+        self.assertEqual(error_response["status"], "error")
+        self.assertIn("Processing failed", error_response["message"])
+        self.assertEqual(status_code, 500)
 
     @patch('src.views.parse_datetime')
     @patch('src.views.fetch_external_data')
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
-    def test_home_page_with_different_dates(self, mock_format_response,
-                                 mock_process_data, mock_fetch_data,
-                                 mock_parse_datetime):
-        """Параметризованный тест с разными корректными датами."""
-        test_dates = ["2024-01-01", "2024-12-31", "2025-06-15"]
+    def test_home_page_formatting_error(self, mock_format_response,
+                             mock_process_data, mock_fetch_data,
+             mock_parse_datetime):
+        """Тест ошибки форматирования ответа (format_response)."""
+        test_date = "2024-01-15"
 
-        for date_str in test_dates:
-            # Сброс вызовов моков для каждого теста
-            mock_parse_datetime.reset_mock()
-            mock_fetch_data.reset_mock()
-            mock_process_data.reset_mock()
-            mock_format_response.reset_mock()
+        # Успешные шаги
+        mock_parsed_date = Mock()
+        mock_parse_datetime.return_value = mock_parsed_date
+        mock_raw_data = [{"id": 1}]
+        mock_fetch_data.return_value = mock_raw_data
+        mock_processed_data = Mock()
+        mock_process_data.return_value = mock_processed_data
 
-            # Настраиваем моки для текущей даты
-            mock_parsed_date = Mock()
-            mock_parse_datetime.return_value = mock_parsed_date
-            mock_raw_data = [{"id": 1, "value": f"test_{date_str}"}]
-            mock_fetch_data.return_value = mock_raw_data
-            mock_processed_data = Mock()
-            mock_process_data.return_value = mock_processed_data
-            expected_response_data = {
-                "status": "success",
-                "data": f"processed_{date_str}"
-            }
-            mock_format_response.return_value = expected_response_data
+        # Ошибка в форматировании
+        mock_format_response.side_effect = Exception("Formatting failed")
 
-            result = home_page(date_str)
+        result = home_page(test_date)
 
-            # Проверяем вызовы
-            mock_parse_datetime.assert_called_with(date_str)
-            mock_fetch_data.assert_called_with(
-                "https://api.example.com/data",
-                {"date": date_str}
-            )
-            mock_process_data.assert_called_with(mock_raw_data)
-            mock_format_response.assert_called_with(mock_processed_data, date_str)
+        error_json, status_code = result
+        error_response = json.loads(error_json)
 
-            # Проверяем результат
-            expected_json = json.dumps(
-                expected_response_data, ensure_ascii=False, indent=2
-            )
-            self.assertEqual(result, expected_json)
+        self.assertEqual(error_response["status"], "error")
+        self.assertIn("Formatting failed", error_response["message"])
+        self.assertEqual(status_code, 50

@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import json
-from src.reports import expenses_by_category, _format_response
+from src.reports import expenses_by_category
 
 
 class TestExpensesByCategory(unittest.TestCase):
