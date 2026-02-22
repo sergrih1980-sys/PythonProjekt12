@@ -6,6 +6,7 @@ from typing import List, Dict, Any
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
     """
     Функция сервиса «Простой поиск».
@@ -59,7 +60,6 @@ def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
             "results": []
         }
         return json.dumps(error_response, ensure_ascii=False, indent=2)
-
 
 
 def _format_response(results: List[Dict[str, Any]], query: str, count: int) -> str:
