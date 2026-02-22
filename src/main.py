@@ -105,6 +105,7 @@ def expenses_by_category(
         }
         return json.dumps(error_response, ensure_ascii=False, indent=2)
 
+
 def _format_expenses_response(
     monthly_data: list,
     category: str,
@@ -180,6 +181,7 @@ def _format_search_response(results: List[Dict[str, Any]], query: str, count: in
     }
     return json.dumps(response, ensure_ascii=False, indent=2)
 
+
 # === ФУНКЦИИ ГЛАВНОЙ СТРАНИЦЫ ===
 
 def parse_datetime(date_string: str) -> datetime:
@@ -198,6 +200,20 @@ def fetch_external_data(api_url: str, params: Dict = None) -> Dict:
         response = requests.get(api_url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
-        logger.info("Успешно получены данные из API")
+        logger.info("Успешно получены данные из API: %s", api_url)
         return data
-    except requests.RequestException as e:
+
+    except requests.exceptions.RequestException as e:
+        error_msg = f"Ошибка при запросе к API {api_url}: {str(e)}"
+        logger.error(error_msg)
+        raise ConnectionError(error_msg) from e
+
+    except json.JSONDecodeError as e:
+        error_msg = f"Ошибка парсинга JSON от API {api_url}: {str(e)}"
+        logger.error(error_msg)
+        raise ValueError(error_msg) from e
+
+    except Exception as e:
+        error_msg = f"Неожиданная ошибка при работе с API {api_url}: {str(e)}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg) from e
