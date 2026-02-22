@@ -1,8 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
 import json
-from datetime import datetime
-
 
 from src.views import home_page
 
@@ -10,11 +8,12 @@ from src.views import home_page
 
 class TestHomePage(unittest.TestCase):
 
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_success(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_success(self, mock_format_response, mock_process_data,
+                              mock_fetch_data, mock_parse_datetime):
         """Тест успешного выполнения home_page."""
         # Подготавливаем тестовые данные
         test_date = "2024-01-15"
@@ -42,14 +41,19 @@ class TestHomePage(unittest.TestCase):
         mock_format_response.assert_called_once_with(mock_processed_data, test_date)
 
         # Проверяем результат
-        expected_json = json.dumps(expected_response_data, ensure_ascii=False, indent=2)
+        expected_json = json.dumps(
+            expected_response_data, ensure_ascii=False, indent=2
+        )
         self.assertEqual(result, expected_json)
 
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_api_failure_with_fallback(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_api_failure_with_fallback(self, mock_format_response,
+                                                         mock_process_data,
+                                                         mock_fetch_data,
+                                                         mock_parse_datetime):
         """Тест с откатом на заглушку при ошибке API (raw_data is None)."""
         test_date = "2024-01-15"
 
@@ -72,14 +76,17 @@ class TestHomePage(unittest.TestCase):
         mock_process_data.assert_called_once()
 
         # Проверяем результат
-        expected_json = json.dumps(expected_response_data, ensure_ascii=False, indent=2)
+        expected_json = json.dumps(
+            expected_response_data, ensure_ascii=False, indent=2
+        )
         self.assertEqual(result, expected_json)
 
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_parse_error(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_parse_error(self, mock_format_response, mock_process_data,
+                          mock_fetch_data, mock_parse_datetime):
         """Тест ошибки парсинга даты."""
         test_date = "invalid-date"
 
@@ -98,11 +105,13 @@ class TestHomePage(unittest.TestCase):
         self.assertEqual(error_response["input_date"], test_date)
         self.assertEqual(status_code, 500)
 
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_processing_error(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_processing_error(self, mock_format_response,
+                                     mock_process_data, mock_fetch_data,
+                             mock_parse_datetime):
         """Тест ошибки обработки данных (process_data_with_pandas)."""
         test_date = "2024-01-15"
 
@@ -115,6 +124,7 @@ class TestHomePage(unittest.TestCase):
         # Мок обработки данных выбрасывает исключение
         mock_process_data.side_effect = Exception("Processing failed")
 
+
         result = home_page(test_date)
 
         error_json, status_code = result
@@ -124,11 +134,13 @@ class TestHomePage(unittest.TestCase):
         self.assertIn("Processing failed", error_response["message"])
         self.assertEqual(status_code, 500)
 
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_formatting_error(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_formatting_error(self, mock_format_response,
+                             mock_process_data, mock_fetch_data,
+             mock_parse_datetime):
         """Тест ошибки форматирования ответа (format_response)."""
         test_date = "2024-01-15"
 
@@ -143,7 +155,6 @@ class TestHomePage(unittest.TestCase):
         # Ошибка в форматировании
         mock_format_response.side_effect = Exception("Formatting failed")
 
-
         result = home_page(test_date)
 
         error_json, status_code = result
@@ -153,18 +164,16 @@ class TestHomePage(unittest.TestCase):
         self.assertIn("Formatting failed", error_response["message"])
         self.assertEqual(status_code, 500)
 
-    # Параметризованный тест для разных корректных дат
-    @patch('views.parse_datetime')
-    @patch('views.fetch_external_data')
-    @patch('views.process_data_with_pandas')
-    @patch('views.format_response')
-    def test_home_page_with_different_dates(self, mock_format_response, mock_process_data, mock_fetch_data, mock_parse_datetime):
+    @patch('src.views.parse_datetime')
+    @patch('src.views.fetch_external_data')
+    @patch('src.views.process_data_with_pandas')
+    @patch('src.views.format_response')
+    def test_home_page_with_different_dates(self, mock_format_response,
+                                 mock_process_data, mock_fetch_data,
+                                 mock_parse_datetime):
         """Параметризованный тест с разными корректными датами."""
         test_dates = ["2024-01-01", "2024-12-31", "2025-06-15"]
 
         for date_str in test_dates:
             # Сброс вызовов моков для каждого теста
-            mock_parse_datetime.reset_mock()
-            mock_fetch_data.reset_mock()
-            mock_process_data.reset_mock()
-            mock_format_response
+            mock_parse_datetime.reset_
