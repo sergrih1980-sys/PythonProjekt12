@@ -37,7 +37,7 @@ class TestHomePage(unittest.TestCase):
     @patch('src.views.process_data_with_pandas')
     @patch('src.views.format_response')
     def test_home_page_api_failure_with_fallback(self, mock_format_response,
-                                                      mock_process_data, mock_fetch_data):
+                                                 mock_process_data, mock_fetch_data):
         test_date = "2024-01-15"
         # Имитируем сбой API
         mock_fetch_data.return_value = None
