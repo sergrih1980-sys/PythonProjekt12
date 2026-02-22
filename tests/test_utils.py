@@ -28,7 +28,7 @@ class TestUtilsFunctions(unittest.TestCase):
 
         self.assertIn("Неверный формат даты", str(context.exception))
 
-    @patch('utils.requests')
+    @patch('src.utils.requests')
     def test_fetch_external_data_success(self, mock_requests):
         """Тест успешного получения данных из API."""
         # Настраиваем мок для успешного ответа
@@ -50,7 +50,7 @@ class TestUtilsFunctions(unittest.TestCase):
         )
         self.assertEqual(result, {"data": "test", "status": "ok"})
 
-    @patch('utils.requests')
+    @patch('src.utils.requests')
     def test_fetch_external_data_request_error(self, mock_requests):
         """Тест ошибки запроса к API."""
         # Мок выбрасывает исключение
