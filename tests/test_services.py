@@ -1,10 +1,9 @@
 import json
 import unittest
-
 from src.services import simple_search
 
-class TestSimpleSearch(unittest.TestCase):
 
+class TestSimpleSearch(unittest.TestCase):
 
     def setUp(self):
         """Подготовка тестовых данных перед каждым тестом."""
@@ -15,7 +14,6 @@ class TestSimpleSearch(unittest.TestCase):
             {"id": 4, "description": "Бензин на АЗС", "amount": 2000, "category": "Транспорт"},
             {"id": 5, "description": "Подарок другу", "amount": 1000, "category": "Подарки"}
         ]
-
 
     def test_simple_search_exact_match(self):
         """Тест точного совпадения запроса с полем транзакции."""
@@ -28,7 +26,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(len(response["results"]), 1)
         self.assertEqual(response["results"][0]["id"], 2)
 
-
     def test_simple_search_partial_match(self):
         """Тест частичного совпадения запроса."""
         result = simple_search("продукты", self.test_transactions)
@@ -38,7 +35,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(response["search_query"], "продукты")
         self.assertEqual(response["found_count"], 1)
         self.assertEqual(response["results"][0]["id"], 1)
-
 
     def test_simple_search_multiple_matches(self):
         """Тест поиска, возвращающего несколько результатов."""
@@ -52,7 +48,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertIn(1, found_ids)  # Покупка продуктов
         self.assertIn(3, found_ids)  # Кафе 'Уют'
 
-
     def test_simple_search_no_matches(self):
         """Тест отсутствия совпадений."""
         result = simple_search("не существующее", self.test_transactions)
@@ -61,7 +56,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(response["status"], "success")
         self.assertEqual(response["found_count"], 0)
         self.assertEqual(len(response["results"]), 0)
-
 
     def test_simple_search_empty_query(self):
         """Тест пустого поискового запроса."""
@@ -73,7 +67,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(response["found_count"], 0)
         self.assertEqual(len(response["results"]), 0)
 
-
     def test_simple_search_whitespace_query(self):
         """Тест запроса с пробелами."""
         result = simple_search("   ", self.test_transactions)
@@ -84,7 +77,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(response["search_query"].strip(), "")
         self.assertEqual(response["found_count"], 0)
         self.assertEqual(len(response["results"]), 0)
-
 
     def test_simple_search_case_insensitive(self):
         """Тест регистронезависимого поиска."""
@@ -98,7 +90,6 @@ class TestSimpleSearch(unittest.TestCase):
         self.assertEqual(response2["found_count"], 1)
         self.assertEqual(response1["results"][0]["id"], 3)
         self.assertEqual(response2["results"][0]["id"], 3)
-
 
     def test_simple_search_search_in_different_fields(self):
         """Тест поиска по разным полям транзакции."""
@@ -115,7 +106,6 @@ class TestSimpleSearch(unittest.TestCase):
 
         self.assertEqual(response_desc["found_count"], 1)
         self.assertEqual(response_desc["results"][0]["id"], 5)
-
 
     def test_simple_search_with_non_string_values(self):
         """Тест обработки транзакций с нестроковыми значениями."""
