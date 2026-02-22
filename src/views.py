@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime
 
-from utils import fetch_external_data, format_response, process_data_with_pandas
+from src.utils import fetch_external_data, format_response, process_data_with_pandas
 
 logger = logging.getLogger(__name__)
 
