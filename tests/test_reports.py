@@ -5,6 +5,7 @@ import pandas as pd
 
 from src.reports import expenses_by_category
 
+
 class TestExpensesByCategory(unittest.TestCase):
 
     def setUp(self):
@@ -92,7 +93,6 @@ class TestExpensesByCategory(unittest.TestCase):
 
         result = expenses_by_category(incomplete_df, 'Продукты', self.reference_date)
         response = json.loads(result)
-
 
         self.assertEqual(response["status"], "error")
         self.assertIn("В DataFrame отсутствуют необходимые колонки", response["message"])
