@@ -19,7 +19,7 @@ def parse_datetime(date_string):
         return parsed_date
     except ValueError as e:
         logger.error(f"Ошибка парсинга даты {date_string}: {e}")
-        raise ValueError(f"Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
+        raise ValueError("Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
 
 
 def fetch_external_data(api_url, params=None):
