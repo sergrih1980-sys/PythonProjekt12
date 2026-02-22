@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 # === ФУНКЦИИ ОТЧЁТА «ТРАТЫ ПО КАТЕГОРИИ» ===
 
+
 def expenses_by_category(
     df: pd.DataFrame,
     category: str,
@@ -20,7 +21,7 @@ def expenses_by_category(
     Функция отчёта «Траты по категории».
     """
     try:
-        logger.info("Запуск отчёта 'Траты по категории' для категории '%s' с датой отсчёта %s", category, reference_date)
+        logger.info("Запуск отчёта 'Траты по категории' для категории '%s' с датой отсчёта %s",category, reference_date)
 
         # Парсим дату отсчёта
         try:
@@ -57,7 +58,7 @@ def expenses_by_category(
         # Если нет данных по категории за период
         if filtered_df.empty:
             logger.warning("Нет транзакций по категории '%s' за период с %s по %s",
-                         category, start_date.date(), ref_date.date())
+      category, start_date.date(), ref_date.date())
             return _format_expenses_response([], category, reference_date, 0.0, 0)
 
         # Рассчитываем общую сумму трат
@@ -128,6 +129,7 @@ def _format_expenses_response(
 
 # === ФУНКЦИИ «ПРОСТОГО ПОИСКА» ===
 
+
 def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
     """Функция сервиса «Простой поиск»."""
     try:
@@ -171,6 +173,7 @@ def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> str:
         }
         return json.dumps(error_response, ensure_ascii=False, indent=2)
 
+
 def _format_search_response(results: List[Dict[str, Any]], query: str, count: int) -> str:
     """Вспомогательная функция для формирования JSON‑ответа (поиск)."""
     response = {
@@ -193,6 +196,7 @@ def parse_datetime(date_string: str) -> datetime:
     except ValueError as e:
         logger.error("Ошибка парсинга даты %s: %s", date_string, e)
         raise ValueError("Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
+
 
 def fetch_external_data(api_url: str, params: Dict = None) -> Dict:
     """Получает данные из внешнего API."""
