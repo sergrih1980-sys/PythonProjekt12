@@ -1,8 +1,8 @@
 import json
 import logging
-import pandas as pd
 from datetime import datetime, timedelta
 
+import pandas as pd
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)

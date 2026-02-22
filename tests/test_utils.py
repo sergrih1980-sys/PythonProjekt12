@@ -1,13 +1,8 @@
 import unittest
-from unittest.mock import patch, Mock
 from datetime import datetime
+from unittest.mock import Mock, patch
 
-from src.utils import (
-    parse_datetime,
-    fetch_external_data,
-    process_data_with_pandas,
-    format_response
-)
+from src.utils import fetch_external_data, format_response, parse_datetime, process_data_with_pandas
 
 
 class TestUtilsFunctions(unittest.TestCase):

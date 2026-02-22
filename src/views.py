@@ -1,7 +1,8 @@
 import json
-from datetime import datetime
-from utils import fetch_external_data, process_data_with_pandas, format_response
 import logging
+from datetime import datetime
+
+from utils import fetch_external_data, format_response, process_data_with_pandas
 
 logger = logging.getLogger(__name__)
 

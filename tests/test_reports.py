@@ -1,6 +1,8 @@
-import unittest
-import pandas as pd
 import json
+import unittest
+
+import pandas as pd
+
 from src.reports import expenses_by_category
 
 

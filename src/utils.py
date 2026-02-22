@@ -1,7 +1,8 @@
 
 import logging
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
 import requests
 
 # Настройка логирования

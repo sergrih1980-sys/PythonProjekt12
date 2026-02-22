@@ -1,9 +1,10 @@
 import json
 import logging
-import pandas as pd
 from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
+import pandas as pd
 import requests
-from typing import List, Dict, Any
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)

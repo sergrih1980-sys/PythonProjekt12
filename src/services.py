@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
