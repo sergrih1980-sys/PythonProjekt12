@@ -1,10 +1,9 @@
 import json
 import unittest
-
+from datetime import datetime, timedelta
 import pandas as pd
 
 from src.reports import expenses_by_category
-
 
 class TestExpensesByCategory(unittest.TestCase):
 
@@ -40,16 +39,25 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertEqual(response["status"], "success")
         self.assertEqual(response["category"], "Продукты")
         self.assertEqual(response["reference_date"], "2024-05-31")
-        self.assertEqual(response["period_start"], "2024-02-29")  # 90 дней назад
+
+        # Рассчитываем period_start как 90 дней назад от reference_date
+        ref_date = datetime.strptime(self.reference_date, '%Y-%m-%d')
+        period_start = (ref_date - timedelta(days=90)).strftime('%Y-%m-%d')
+        self.assertEqual(response["period_start"], period_start)
         self.assertEqual(response["period_end"], "2024-05-31")
 
-        # Проверяем общую сумму (800 + 1200 = 2000)
-        self.assertAlmostEqual(response["total_amount"], 2000.00, places=2)
-        self.assertEqual(response["transaction_count"], 2)
+        # Проверяем общую сумму (1000 + 800 + 1200 = 3000)
+        # Транзакции: январь (1000), март (800), май (1200) — все в 90‑дневном периоде
+        self.assertAlmostEqual(response["total_amount"], 3000.00, places=2)
+        self.assertEqual(response["transaction_count"], 3)
 
         # Проверяем ежемесячную разбивку
         monthly_breakdown = response["monthly_breakdown"]
-        self.assertEqual(len(monthly_breakdown), 2)  # два месяца: март и май
+        self.assertEqual(len(monthly_breakdown), 3)  # три месяца: январь, март, май
+
+        # Январь
+        jan_data = next(item for item in monthly_breakdown if item["month"] == "2024-01")
+        self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
 
         # Март
         march_data = next(item for item in monthly_breakdown if item["month"] == "2024-03")
@@ -85,6 +93,7 @@ class TestExpensesByCategory(unittest.TestCase):
         result = expenses_by_category(incomplete_df, 'Продукты', self.reference_date)
         response = json.loads(result)
 
+
         self.assertEqual(response["status"], "error")
         self.assertIn("В DataFrame отсутствуют необходимые колонки", response["message"])
 
@@ -112,6 +121,16 @@ class TestExpensesByCategory(unittest.TestCase):
         response = json.loads(result)
 
         self.assertEqual(response["status"], "success")
-        # Должна остаться только одна корректная транзакция (2024-03-10)
-        self.assertAlmostEqual(response["total_amount"], 800.00, places=2)
-        self.assertEqual(response["transaction_count"], 1)
+
+        # Должны остаться только корректные даты: январь (1000) и март (800)
+        self.assertAlmostEqual(response["total_amount"], 1800.00, places=2)
+        self.assertEqual(response["transaction_count"], 2)
+
+        monthly_breakdown = response["monthly_breakdown"]
+        self.assertEqual(len(monthly_breakdown), 2)  # январь и март
+
+        jan_data = next(item for item in monthly_breakdown if item["month"] == "2024-01")
+        self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
+
+        march_data = next(item for item in monthly_breakdown if item["month"] == "2024-03")
+        self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
