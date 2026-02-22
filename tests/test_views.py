@@ -11,7 +11,6 @@ class TestHomePage(unittest.TestCase):
     @patch('src.utils.format_response')
     def test_home_page_success(self, mock_format_response, mock_process_data, mock_fetch_data):
         """Тест успешного выполнения home_page."""
-        # Подготавливаем тестовые данные
         test_date = "2024-01-15"
         mock_raw_data = [
             {"id": 1, "value": "test1", "category": "A"},
@@ -25,7 +24,6 @@ class TestHomePage(unittest.TestCase):
         mock_process_data.return_value = mock_processed_data
         mock_format_response.return_value = expected_response_data
 
-        # Вызываем функцию
         result = home_page(test_date)
 
         # Проверяем вызовы моков
@@ -54,6 +52,12 @@ class TestHomePage(unittest.TestCase):
         # Мок возвращает None (ошибка API)
         mock_fetch_data.return_value = None
 
+        # Заглушка данных
+        fallback_data = [
+            {"id": 1, "value": "test1", "category": "A"},
+            {"id": 2, "value": "test2", "category": "B"}
+        ]
+
         # Остальные моки
         mock_processed_data = Mock()
         mock_process_data.return_value = mock_processed_data
@@ -63,8 +67,12 @@ class TestHomePage(unittest.TestCase):
 
         result = home_page(test_date)
 
-        # Проверяем, что использовали заглушку
-        mock_process_data.assert_called_once()
+        # Проверяем, что fetch вернул None
+        mock_fetch_data.assert_called_once()
+
+        # Проверяем, что использовали заглушку и продолжили обработку
+        mock_process_data.assert_called_once_with(fallback_data)
+        mock_format_response.assert_called_once_with(mock_processed_data, test_date)
 
         # Проверяем результат
         expected_json = json.dumps(
@@ -89,7 +97,7 @@ class TestHomePage(unittest.TestCase):
 
         result = home_page(test_date)
 
-        # Разбираем результат (кортеж: JSON, статус)
+        # Разбираем результат — в случае ошибки возвращается кортеж (JSON, статус)
         error_json, status_code = result
         error_response = json.loads(error_json)
 
