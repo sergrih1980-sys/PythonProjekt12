@@ -62,7 +62,8 @@ def expenses_by_category(
 
         # Если нет данных по категории за период
         if filtered_df.empty:
-            logger.warning(f"Нет транзакций по категории '{category}'за период с {start_date.date()} по {ref_date.date()}")
+            logger.warning(f"Нет транзакций по категории ' \
+            {category}'за период с {start_date.date()} по {ref_date.date()}")
             return _format_response([], category, reference_date, 0.0, 0)
 
         # Рассчитываем общую сумму трат
