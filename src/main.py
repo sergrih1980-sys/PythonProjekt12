@@ -192,7 +192,10 @@ def expenses_by_category(
         filtered_df.dropna(subset=['date'], inplace=True)
 
         if filtered_df.empty:
-            logger.warning(f"Нет транзакций по категории '{category}' за период с {start_date.date()} по {ref_date.date()}")
+            logger.warning(
+                f"Нет транзакций по категории '{category}' "
+                f"за период с {start_date.date()} по {ref_date.date()}"
+            )
             return _format_expenses_response([], category, reference_date, 0.0, 0)
 
         # Рассчитываем общую сумму трат
