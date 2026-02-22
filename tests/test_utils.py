@@ -1,6 +1,8 @@
 import unittest
-from unittest.mock import patch, Mock
-from requests.exceptions import RequestException, HTTPError
+from unittest.mock import Mock, patch
+
+from requests.exceptions import HTTPError, RequestException
+
 from src.utils import fetch_external_data
 
 

@@ -1,7 +1,9 @@
 import json
 import unittest
 from datetime import datetime, timedelta
+
 import pandas as pd
+
 from src.reports import expenses_by_category
 
 

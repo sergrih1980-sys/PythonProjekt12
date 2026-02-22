@@ -1,5 +1,6 @@
 import json
 import unittest
+
 from src.services import simple_search
 
 

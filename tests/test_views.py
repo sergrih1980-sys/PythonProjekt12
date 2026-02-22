@@ -1,6 +1,7 @@
-import unittest
-from unittest.mock import patch, Mock
 import json
+import unittest
+from unittest.mock import Mock, patch
+
 from src.views import home_page
 
 
