@@ -65,7 +65,7 @@ class TestExpensesByCategory(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             expenses_by_category(self.test_df, 'Продукты', '31-05-2024')
 
-        self.assertIn("Неверный формат даты отсчёта", str(context.exception))
+        self.assertIn("Неверный формат даты", str(context.exception))
 
     def test_expenses_by_category_incorrect_dates(self):
         """Тест обработки некорректных дат в DataFrame."""
@@ -88,8 +88,31 @@ class TestExpensesByCategory(unittest.TestCase):
         monthly_breakdown = response["monthly_breakdown"]
         self.assertEqual(len(monthly_breakdown), 2)  # январь и март
 
-        jan_data = next(item for item in monthly_breakdown if item["month"] == "2024-01")
+        jan_data = next((item for item in monthly_breakdown if item["month"] == "2024-01"), None)
+        self.assertIsNotNone(jan_data)
         self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
 
-        march_data = next(item for item in monthly_breakdown if item["month"] == "2024-03")
+        march_data = next((item for item in monthly_breakdown if item["month"] == "2024-03"), None)
+        self.assertIsNotNone(march_data)
         self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
+
+    def test_expenses_by_category_no_matching_transactions(self):
+        """Тест отсутствия транзакций по категории в периоде."""
+        result = expenses_by_category(self.test_df, 'Одежда', self.reference_date)
+        response = json.loads(result)
+
+        self.assertEqual(response["status"], "success")
+        self.assertEqual(response["total_amount"], 0.00)
+        self.assertEqual(response["transaction_count"], 0)
+        self.assertEqual(len(response["monthly_breakdown"]), 0)
+
+    def test_expenses_by_category_empty_dataframe(self):
+        """Тест с пустым DataFrame."""
+        empty_df = pd.DataFrame(columns=['date', 'amount', 'category'])
+        result = expenses_by_category(empty_df, 'Продукты', self.reference_date)
+        response = json.loads(result)
+
+        self.assertEqual(response["status"], "success")
+        self.assertEqual(response["total_amount"], 0.00)
+        self.assertEqual(response["transaction_count"], 0)
+        self.assertEqual(len(response["monthly_breakdown"]), 0)

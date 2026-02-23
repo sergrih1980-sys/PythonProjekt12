@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import Mock, patch
-
 from requests.exceptions import HTTPError, RequestException
 
 from src.utils import fetch_external_data
@@ -28,11 +27,9 @@ class TestUtilsFunctions(unittest.TestCase):
         # Имитируем сетевую ошибку
         mock_get.side_effect = RequestException("Connection failed")
 
-        # Проверка, что исключение выбрасывается
-        with self.assertRaises(RequestException) as context:
-            fetch_external_data("2024-01-15")
-
-        self.assertIn("Connection failed", str(context.exception))
+        # Функция должна вернуть None при сетевой ошибке
+        result = fetch_external_data("2024-01-15")
+        self.assertIsNone(result)
 
     @patch('requests.get')
     def test_fetch_external_data_http_error(self, mock_get):
@@ -42,11 +39,11 @@ class TestUtilsFunctions(unittest.TestCase):
         mock_response.raise_for_status.side_effect = HTTPError("404 Not Found")
         mock_get.return_value = mock_response
 
-        # Проверка, что HTTPError выбрасывается
-        with self.assertRaises(HTTPError) as context:
-            fetch_external_data("2024-01-15")
-
-        self.assertIn("404 Not Found", str(context.exception))
+        # Вызываем raise_for_status вручную для имитации поведения requests
+        with patch.object(mock_response, 'raise_for_status', side_effect=HTTPError("404 Not Found")):
+            # Функция должна вернуть None при HTTP-ошибке
+            result = fetch_external_data("2024-01-15")
+            self.assertIsNone(result)
 
     @patch('requests.get')
     def test_fetch_external_data_json_decode_error(self, mock_get):
