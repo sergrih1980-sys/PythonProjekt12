@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
-import pandas as pd
 import json
+from datetime import datetime, timedelta
 
+import pandas as pd
 
 """ Траты по категориям """
 
