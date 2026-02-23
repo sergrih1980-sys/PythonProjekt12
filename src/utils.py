@@ -40,10 +40,9 @@ def fetch_external_data(date_str):
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()  # Вызывает HTTPError для 4xx/5xx кодов
         return response.json()
-    except (RequestException, HTTPError, ValueError) as e:
+    except (requests.exceptions.RequestException, requests.exceptions.HTTPError, ValueError) as e:
         logging.warning(f"Ошибка при получении данных для даты {date_str}: {e}")
         return None
-
 
 def process_data_with_pandas(raw_data):
     """
