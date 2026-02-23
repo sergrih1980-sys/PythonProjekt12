@@ -23,18 +23,25 @@ def parse_datetime(date_string):
         raise ValueError("Неверный формат даты. Ожидаемый формат: YYYY-MM-DD HH:MM:SS")
 
 
-def fetch_external_data(api_url, params=None):
+def fetch_external_data(date_str):
     """
-    Получает данные из внешнего API.
+    Получает внешние данные для указанной даты.
+
+    Args:
+        date_str (str): Дата в формате 'YYYY-MM-DD'
+
+    Returns:
+        dict or None: Данные в виде словаря или None при ошибке
     """
+    url = "https://api.example.com/data"
+    params = {"date": date_str}
+
     try:
-        response = requests.get(api_url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        logger.info("Успешно получены данные из API")
-        return data
-    except requests.RequestException as e:
-        logger.error(f"Ошибка при запросе к API: {e}")
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()  # Вызывает HTTPError для 4xx/5xx кодов
+        return response.json()
+    except (RequestException, HTTPError, ValueError) as e:
+        logging.warning(f"Ошибка при получении данных для даты {date_str}: {e}")
         return None
 
 

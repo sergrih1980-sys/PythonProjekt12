@@ -4,7 +4,6 @@ from requests.exceptions import HTTPError, RequestException
 
 from src.utils import fetch_external_data
 
-
 class TestUtilsFunctions(unittest.TestCase):
 
     @patch('requests.get')
@@ -20,7 +19,11 @@ class TestUtilsFunctions(unittest.TestCase):
 
         # Проверки
         self.assertEqual(result, {"data": "test"})
-        mock_get.assert_called_once()
+        mock_get.assert_called_once_with(
+            "https://api.example.com/data",
+            params={"date": "2024-01-15"},
+            timeout=10
+        )
 
     @patch('requests.get')
     def test_fetch_external_data_request_error(self, mock_get):
@@ -39,11 +42,9 @@ class TestUtilsFunctions(unittest.TestCase):
         mock_response.raise_for_status.side_effect = HTTPError("404 Not Found")
         mock_get.return_value = mock_response
 
-        # Вызываем raise_for_status вручную для имитации поведения requests
-        with patch.object(mock_response, 'raise_for_status', side_effect=HTTPError("404 Not Found")):
-            # Функция должна вернуть None при HTTP-ошибке
-            result = fetch_external_data("2024-01-15")
-            self.assertIsNone(result)
+        # Функция должна вернуть None при HTTP-ошибке
+        result = fetch_external_data("2024-01-15")
+        self.assertIsNone(result)
 
     @patch('requests.get')
     def test_fetch_external_data_json_decode_error(self, mock_get):
@@ -55,5 +56,14 @@ class TestUtilsFunctions(unittest.TestCase):
         mock_get.return_value = mock_response
 
         # Функция должна вернуть None при ошибке декодирования
+        result = fetch_external_data("2024-01-15")
+        self.assertIsNone(result)
+
+    @patch('requests.get')
+    def test_fetch_external_data_timeout(self, mock_get):
+        # Имитируем таймаут
+        mock_get.side_effect = RequestException("Timeout")
+
+        # Функция должна вернуть None при таймауте
         result = fetch_external_data("2024-01-15")
         self.assertIsNone(result)
