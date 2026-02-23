@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 import pandas as pd
 
+
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def spending_by_category(
     transactions: pd.DataFrame,
@@ -48,7 +50,10 @@ def spending_by_category(
             (transactions['category'] == category)
         ]
 
-        logger.info(f"Отфильтровано {len(filtered_df)} транзакций по категории '{category}' за период {period_start.date()} – {ref_date.date()}")
+        logger.info(
+            f"Отфильтровано {len(filtered_df)} транзакций по категории '{category}' "
+            f"за период {period_start.date()} – {ref_date.date()}"
+        )
         return filtered_df
 
     except Exception as e:
@@ -66,6 +71,7 @@ def get_greeting(hour: int) -> str:
         return "Добрый вечер"
     else:
         return "Доброй ночи"
+
 
 def generate_response(input_date_string: str) -> str:
     """
@@ -152,7 +158,10 @@ def generate_response(input_date_string: str) -> str:
     except ValueError as e:
         error_response = {
             "status": "error",
-            "message": f"Неверный формат даты: {str(e)}. Ожидаемый формат: YYYY-MM-DD HH:MM:SS",
+            "message": (
+                f"Неверный формат даты: {str(e)}. "
+                "Ожидаемый формат: YYYY-MM-DD HH:MM:SS"
+            ),
             "input_date": input_date_string,
             "processed_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
