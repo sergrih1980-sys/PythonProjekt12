@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import json
 
+""" Траты по категориям """
 def expenses_by_category(df, category, reference_date):
     # Валидация формата reference_date
     try:
