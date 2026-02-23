@@ -42,14 +42,17 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertEqual(response["period_start"], period_start)
         self.assertEqual(response["period_end"], "2024-05-31")
 
-
-        # Общая сумма: 1000 (янв) + 800 (мар) + 1200 (май) = 3000
-        self.assertAlmostEqual(response["total_amount"], 3000.00, places=2)
-        self.assertEqual(response["transaction_count"], 3)
+        # Исправленная сумма: 800 (мар) + 1200 (май) = 2000
+        self.assertAlmostEqual(response["total_amount"], 2000.00, places=2)
+        self.assertEqual(response["transaction_count"], 2)  # Теперь 2 транзакции
 
         monthly_breakdown = response["monthly_breakdown"]
-        self.assertEqual(len(monthly_breakdown), 3)  # январь, март, май
+        self.assertEqual(len(monthly_breakdown), 2)  # март и май
 
-        jan_data = next((item for item in monthly_breakdown if item["month"] == "2024-01"), None)
-        self.assertIsNotNone(jan_data)
-        self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
+        march_data = next((item for item in monthly_breakdown if item["month"] == "2024-03"), None)
+        self.assertIsNotNone(march_data)
+        self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
+
+        may_data = next((item for item in monthly_breakdown if item["month"] == "2024-05"), None)
+        self.assertIsNotNone(may_data)
+        self.assertAlmostEqual(may_data["amount"], 1200.00, places=2)

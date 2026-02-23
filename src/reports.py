@@ -15,23 +15,20 @@ def expenses_by_category(df, category, reference_date):
         str: JSON‑строка с результатами отчёта
     """
     try:
-        # Проверка формата даты отсчёта
-        try:
-            ref_date = datetime.strptime(reference_date, '%Y-%m-%d')
-        except ValueError:
-            raise ValueError("Неверный формат даты отсчёта. Ожидаемый формат: YYYY-MM-DD")
-
+        # Преобразуем входную дату в datetime
+        ref_date = datetime.strptime(reference_date, '%Y-%m-%d')
         period_start = ref_date - timedelta(days=90)
 
-        # Преобразование столбца date в datetime с обработкой ошибок
-        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        # Копируем DataFrame и преобразуем столбец date в datetime
+        df_copy = df.copy()
+        df_copy['date'] = pd.to_datetime(df_copy['date'], errors='coerce')
 
-        # Фильтрация: корректные даты, в периоде, по категории
-        filtered_df = df[
-            (df['date'].notna()) &
-            (df['date'] >= period_start) &
-            (df['date'] <= ref_date) &
-            (df['category'] == category)
+        # Фильтруем: корректные даты, в периоде, по категории
+        filtered_df = df_copy[
+            (df_copy['date'].notna()) &
+            (df_copy['date'] >= period_start) &
+            (df_copy['date'] <= ref_date) &
+            (df_copy['category'] == category)
         ]
 
         if filtered_df.empty:
@@ -46,18 +43,17 @@ def expenses_by_category(df, category, reference_date):
                 "monthly_breakdown": []
             })
 
-        # Расчёт общей суммы
+        # Общая сумма и количество транзакций
         total_amount = float(filtered_df['amount'].sum())
+        transaction_count = len(filtered_df)
 
-        # Группировка по месяцам
+        # Группировка по месяцам: формируем ключ 'YYYY-MM'
         monthly_breakdown = []
         for month, group in filtered_df.groupby(filtered_df['date'].dt.to_period('M')):
             monthly_breakdown.append({
                 "month": month.strftime('%Y-%m'),
                 "amount": float(group['amount'].sum())
             })
-
-        transaction_count = len(filtered_df)
 
         return json.dumps({
             "status": "success",
