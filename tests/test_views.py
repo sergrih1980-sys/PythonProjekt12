@@ -18,15 +18,20 @@ class TestHomePage(unittest.TestCase):
         expected_response_dict = {"status": "success", "data": "processed"}
         mock_format_response.return_value = expected_response_dict
 
+        test_date = "2024-01-15"
+
         # Выполнение
-        result = home_page("2024-01-15")
+        result = home_page(test_date)
 
-        # Проверки
-        mock_fetch_data.assert_called_once_with("2024-01-15")
+        # Проверки вызовов моков — с корректными параметрами
+        mock_fetch_data.assert_called_once_with(
+            "https://api.example.com/data",
+            {"date": test_date}
+        )
         mock_process_data.assert_called_once_with(mock_fetch_data.return_value)
-        mock_format_response.assert_called_once_with(mock_processed_data, "2024-01-15")
+        mock_format_response.assert_called_once_with(mock_processed_data, test_date)
 
-        # Преобразуем результат в dict, если это JSON‑строка
+        # Обрабатываем результат: JSON‑строка или dict
         if isinstance(result, str):
             result_dict = json.loads(result)
         else:
@@ -57,8 +62,11 @@ class TestHomePage(unittest.TestCase):
         # Выполнение
         result = home_page(test_date)
 
-        # Проверяем вызовы моков
-        mock_fetch_data.assert_called_once_with(test_date)
+        # Проверяем вызовы моков — с корректными параметрами
+        mock_fetch_data.assert_called_once_with(
+            "https://api.example.com/data",
+            {"date": test_date}
+        )
         mock_process_data.assert_called_once_with(fallback_data)
         mock_format_response.assert_called_once_with(mock_processed_data, test_date)
 
