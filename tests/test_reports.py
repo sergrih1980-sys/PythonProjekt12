@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from src.reports import expenses_by_category
 
+
 class TestExpensesByCategory(unittest.TestCase):
 
     def setUp(self):
