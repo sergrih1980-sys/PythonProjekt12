@@ -2,8 +2,18 @@ import pandas as pd
 from datetime import datetime, timedelta
 import json
 
-
 def expenses_by_category(df, category, reference_date):
+    """
+    Формирует отчёт по расходам для указанной категории за последние 90 дней.
+
+    Args:
+        df (pd.DataFrame): DataFrame с колонками 'date', 'amount', 'category'
+        category (str): Категория для анализа
+        reference_date (str): Дата отсчёта в формате 'YYYY-MM-DD'
+
+    Returns:
+        str: JSON‑строка с результатами отчёта
+    """
     try:
         # Проверка формата даты отсчёта
         try:

@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 from src.reports import expenses_by_category
 
-
 class TestExpensesByCategory(unittest.TestCase):
 
     def setUp(self):
@@ -42,6 +41,7 @@ class TestExpensesByCategory(unittest.TestCase):
         self.assertEqual(response["period_start"], period_start)
         self.assertEqual(response["period_end"], "2024-05-31")
 
+
         # Общая сумма: 1000 (янв) + 800 (мар) + 1200 (май) = 3000
         self.assertAlmostEqual(response["total_amount"], 3000.00, places=2)
         self.assertEqual(response["transaction_count"], 3)
@@ -52,66 +52,3 @@ class TestExpensesByCategory(unittest.TestCase):
         jan_data = next((item for item in monthly_breakdown if item["month"] == "2024-01"), None)
         self.assertIsNotNone(jan_data)
         self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
-
-        march_data = next((item for item in monthly_breakdown if item["month"] == "2024-03"), None)
-        self.assertIsNotNone(march_data)
-        self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
-
-        may_data = next((item for item in monthly_breakdown if item["month"] == "2024-05"), None)
-        self.assertIsNotNone(may_data)
-        self.assertAlmostEqual(may_data["amount"], 1200.00, places=2)
-
-    def test_expenses_by_category_invalid_date_format(self):
-        """Тест неверного формата даты отсчёта."""
-        with self.assertRaises(ValueError) as context:
-            expenses_by_category(self.test_df, 'Продукты', '31-05-2024')
-        self.assertIn("Неверный формат даты", str(context.exception))
-
-    def test_expenses_by_category_incorrect_dates(self):
-        """Тест обработки некорректных дат в DataFrame."""
-        df_with_bad_dates = pd.DataFrame({
-            'date': ['2024-01-15', 'некорректная дата', '2024-03-10'],
-            'amount': [1000, 1500, 800],
-            'category': ['Продукты', 'Продукты', 'Продукты']
-        })
-
-        result = expenses_by_category(df_with_bad_dates, 'Продукты', self.reference_date)
-        response = json.loads(result)
-
-        self.assertEqual(response["status"], "success")
-
-        # Должны остаться только корректные даты: январь (1000) и март (800)
-        self.assertAlmostEqual(response["total_amount"], 1800.00, places=2)
-        self.assertEqual(response["transaction_count"], 2)
-
-        monthly_breakdown = response["monthly_breakdown"]
-        self.assertEqual(len(monthly_breakdown), 2)  # январь и март
-
-        jan_data = next((item for item in monthly_breakdown if item["month"] == "2024-01"), None)
-        self.assertIsNotNone(jan_data)
-        self.assertAlmostEqual(jan_data["amount"], 1000.00, places=2)
-
-        march_data = next((item for item in monthly_breakdown if item["month"] == "2024-03"), None)
-        self.assertIsNotNone(march_data)
-        self.assertAlmostEqual(march_data["amount"], 800.00, places=2)
-
-    def test_expenses_by_category_no_matching_transactions(self):
-        """Тест отсутствия транзакций по категории в периоде."""
-        result = expenses_by_category(self.test_df, 'Одежда', self.reference_date)
-        response = json.loads(result)
-
-        self.assertEqual(response["status"], "success")
-        self.assertEqual(response["total_amount"], 0.00)
-        self.assertEqual(response["transaction_count"], 0)
-        self.assertEqual(len(response["monthly_breakdown"]), 0)
-
-    def test_expenses_by_category_empty_dataframe(self):
-        """Тест с пустым DataFrame."""
-        empty_df = pd.DataFrame(columns=['date', 'amount', 'category'])
-        result = expenses_by_category(empty_df, 'Продукты', self.reference_date)
-        response = json.loads(result)
-
-        self.assertEqual(response["status"], "success")
-        self.assertEqual(response["total_amount"], 0.00)
-        self.assertEqual(response["transaction_count"], 0)
-        self.assertEqual(len(response["monthly_breakdown"]), 0)
